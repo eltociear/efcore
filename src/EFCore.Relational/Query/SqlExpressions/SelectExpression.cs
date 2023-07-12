@@ -109,12 +109,18 @@ public sealed partial class SelectExpression : TableExpressionBase
     /// <param name="columnType">The type of the column to add as the projection.</param>
     /// <param name="columnTypeMapping">The type mapping of the column to add as the projection.</param>
     /// <param name="isColumnNullable">Whether the column projected out is nullable.</param>
+    /// <param name="identifierColumnName">The name of the column to use as identifier.</param>
+    /// <param name="identifierColumnType">The type of the column to use as identifier.</param>
+    /// <param name="identifierColumnTypeMapping">The type mapping of the column to use as identifier.</param>
     public SelectExpression(
         TableExpressionBase tableExpression,
         string columnName,
         Type columnType,
         RelationalTypeMapping? columnTypeMapping,
-        bool? isColumnNullable = null)
+        bool? isColumnNullable = null,
+        string? identifierColumnName = null,
+        Type? identifierColumnType = null,
+        RelationalTypeMapping? identifierColumnTypeMapping = null)
         : base(null)
     {
         var tableReferenceExpression = new TableReferenceExpression(this, tableExpression.Alias!);
@@ -128,6 +134,18 @@ public sealed partial class SelectExpression : TableExpressionBase
             isColumnNullable ?? columnType.IsNullableType());
 
         _projectionMapping[new ProjectionMember()] = columnExpression;
+
+        if (identifierColumnName != null && identifierColumnType != null && identifierColumnTypeMapping != null)
+        {
+            var identifierColumn = new ConcreteColumnExpression(
+                identifierColumnName,
+                tableReferenceExpression,
+                identifierColumnType.UnwrapNullableType(),
+                identifierColumnTypeMapping,
+                identifierColumnType.IsNullableType());
+
+            _identifier.Add((identifierColumn, identifierColumnTypeMapping!.Comparer));
+        }
     }
 
     internal SelectExpression(IEntityType entityType, ISqlExpressionFactory sqlExpressionFactory)
@@ -2156,7 +2174,10 @@ public sealed partial class SelectExpression : TableExpressionBase
     public void ApplyUnion(SelectExpression source2, bool distinct)
         => ApplySetOperation(SetOperationType.Union, source2, distinct);
 
-    private void ApplySetOperation(SetOperationType setOperationType, SelectExpression select2, bool distinct)
+    private void ApplySetOperation(
+        SetOperationType setOperationType,
+        SelectExpression select2,
+        bool distinct)
     {
         // TODO: Introduce clone method? See issue#24460
         var select1 = new SelectExpression(
@@ -2205,7 +2226,7 @@ public sealed partial class SelectExpression : TableExpressionBase
             : Array.Empty<ColumnExpression?>();
         var entityProjectionIdentifiers = new List<ColumnExpression>();
         var entityProjectionValueComparers = new List<ValueComparer>();
-        var otherExpressions = new List<SqlExpression>();
+        var otherExpressions = new List<(SqlExpression, RelationalTypeMapping)>();
 
         // Push down into a subquery if limit/offset are defined. If not, any orderings can be discarded as set operations don't preserve
         // them.
@@ -2308,7 +2329,11 @@ public sealed partial class SelectExpression : TableExpressionBase
                     }
                 }
 
-                otherExpressions.Add(outerProjection);
+                // we need type mapping for identifiers - it may happen that one side of the set operation comes from collection parameter
+                // and therefore doesn't have type mapping (yet - we infer those after the translation is complete)
+                // but for set operation at least one side should have type mapping, otherwise whole thing would have been parameterized out
+                var outerTypeMapping = innerProjection1.Expression.TypeMapping ?? innerProjection2.Expression.TypeMapping!;
+                otherExpressions.Add((outerProjection, outerTypeMapping));
             }
         }
 
@@ -2349,10 +2374,10 @@ public sealed partial class SelectExpression : TableExpressionBase
                     // If there are no other expressions then we can use all entityProjectionIdentifiers
                     _identifier.AddRange(entityProjectionIdentifiers.Zip(entityProjectionValueComparers));
                 }
-                else if (otherExpressions.All(e => e is ColumnExpression))
+                else if (otherExpressions.All(e => e.Item1 is ColumnExpression))
                 {
                     _identifier.AddRange(entityProjectionIdentifiers.Zip(entityProjectionValueComparers));
-                    _identifier.AddRange(otherExpressions.Select(e => ((ColumnExpression)e, e.TypeMapping!.KeyComparer)));
+                    _identifier.AddRange(otherExpressions.Select(e => ((ColumnExpression)e.Item1, e.Item2.KeyComparer)));
                 }
             }
         }

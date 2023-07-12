@@ -220,7 +220,14 @@ public class SqliteQueryableMethodTranslatingExpressionVisitor : RelationalQuery
         var isColumnNullable = elementClrType.IsNullableType();
 
         var selectExpression = new SelectExpression(
-            jsonEachExpression, columnName: "value", columnType: elementClrType, columnTypeMapping: elementTypeMapping, isColumnNullable);
+            jsonEachExpression,
+            columnName: "value",
+            columnType: elementClrType,
+            columnTypeMapping: elementTypeMapping,
+            isColumnNullable,
+            identifierColumnName: "key",
+            identifierColumnType: typeof(int),
+            identifierColumnTypeMapping: _typeMappingSource.FindMapping(typeof(int)));
 
         // TODO: SQLite does have REAL and BLOB types, which JSON does not. Need to possibly cast to that.
         if (elementTypeMapping is not null)

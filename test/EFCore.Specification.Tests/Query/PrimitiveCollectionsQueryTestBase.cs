@@ -33,7 +33,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => new int?[] { null, 999 }.Contains(c.NullableInt)),
-            entryCount: 2);
+            entryCount: 3);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -58,7 +58,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => new[] { 2, 999 }.Count(i => i > c.Id) == 1),
-            entryCount: 2);
+            entryCount: 4);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -66,7 +66,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => new[] { 2, 999, 1000 }.Count(i => i > c.Id) == 2),
-            entryCount: 2);
+            entryCount: 4);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -153,7 +153,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => new[] { 2, 999 }.All(i => i != c.Id)),
-            entryCount: 2);
+            entryCount: 4);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -164,7 +164,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         return AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => ids.Count(i => i > c.Id) == 1),
-            entryCount: 2);
+            entryCount: 4);
     }
 
     [ConditionalTheory]
@@ -200,7 +200,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         return AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => nullableInts.Contains(c.NullableInt)),
-            entryCount: 2);
+            entryCount: 3);
     }
 
     [ConditionalTheory]
@@ -240,7 +240,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         return AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => bools.Contains(c.Bool)),
-            entryCount: 1);
+            entryCount: 2);
     }
 
     [ConditionalTheory]
@@ -252,7 +252,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         return AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => enums.Contains(c.Enum)),
-            entryCount: 2);
+            entryCount: 3);
     }
 
     [ConditionalTheory]
@@ -273,7 +273,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Ints.Contains(10)),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -281,7 +281,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.NullableInts.Contains(10)),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -289,7 +289,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.NullableInts.Contains(null)),
-            entryCount: 1);
+            entryCount: 3);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -305,7 +305,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Bools.Contains(true)),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -340,7 +340,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Strings[1] == "10"),
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => (c.Strings.Length >= 2 ? c.Strings[1] : "-1") == "10"),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -351,7 +351,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
                 c => c.DateTimes[1] == new DateTime(2020, 1, 10, 12, 30, 0, DateTimeKind.Utc)),
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(
                 c => (c.DateTimes.Length >= 2 ? c.DateTimes[1] : default) == new DateTime(2020, 1, 10, 12, 30, 0, DateTimeKind.Utc)),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -443,7 +443,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
                 .Where(c => c.Ints.OrderByDescending(i => i).ElementAt(0) == 111),
             ss => ss.Set<PrimitiveCollectionsEntity>()
                 .Where(c => c.Ints.Length > 0 && c.Ints.OrderByDescending(i => i).ElementAt(0) == 111),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -451,7 +451,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Ints.Any()),
-            entryCount: 2);
+            entryCount: 4);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -514,7 +514,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         => AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Ints.Intersect(new[] { 11, 111 }).Count() == 2),
-            entryCount: 1);
+            entryCount: 2);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -525,7 +525,7 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(
                 c => new[] { 11, 111 }.Except(c.Ints).Count(i => i % 2 == 1) == 2),
-            entryCount: 2);
+            entryCount: 3);
 
     [ConditionalTheory]
     [MemberData(nameof(IsAsyncData))]
@@ -612,6 +612,30 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         var results = compiledQuery(context, ints).ToList();
     }
 
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Parameter_collection_in_subquery_Union_column_collection(bool async)
+    {
+        var ints = new[] { 10, 111 };
+
+        return AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().Where(p => ints.Skip(1).Union(p.Ints).Count() == 3),
+            entryCount: 4);
+    }
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Parameter_collection_in_subquery_Union_column_collection_nested(bool async)
+    {
+        var ints = new[] { 10, 111 };
+
+        return AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().Where(p => ints.Skip(1).Union(p.Ints.OrderBy(x => x).Skip(1).Distinct().OrderByDescending(x => x).Take(20)).Count() == 3),
+            entryCount: 2);
+    }
+
     [ConditionalFact]
     public virtual void Parameter_collection_in_subquery_and_Convert_as_compiled_query()
     {
@@ -641,8 +665,118 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
         return AssertQuery(
             async,
             ss => ss.Set<PrimitiveCollectionsEntity>().Where(c => c.Ints.Skip(1).Union(ints).Count() == 3),
-            entryCount: 1);
+            entryCount: 2);
     }
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_simple(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.Ints),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, ordered: true));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_ordered(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.Ints.OrderByDescending(xx => xx).ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, ordered: true));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_datetimes_filtered(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.DateTimes.Where(xx => xx.Day != 1).ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_with_paging(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.NullableInts.Take(20).ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_with_paging2(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.NullableInts.OrderBy(x => x).Skip(1).ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_with_paging3(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.NullableInts.Skip(2).ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_ints_with_distinct(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.Ints.Distinct().ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory(Skip = "issue #31277")]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_collection_of_nullable_ints_with_distinct(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => x.NullableInts.Distinct().ToList()),
+            assertOrder: true,
+            elementAsserter: (e, a) => AssertCollection(e, a, elementSorter: ee => ee));
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_empty_collection_of_nullables_and_collection_only_containing_nulls(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => new
+            {
+                Empty = x.NullableInts.Where(x => false).ToList(),
+                OnlyNull = x.NullableInts.Where(x => x == null).ToList(),
+            }),
+            assertOrder: true,
+            elementAsserter: (e, a) =>
+            {
+                AssertCollection(e.Empty, a.Empty, ordered: true);
+                AssertCollection(e.OnlyNull, a.OnlyNull, ordered: true);
+            });
+
+    [ConditionalTheory]
+    [MemberData(nameof(IsAsyncData))]
+    public virtual Task Project_multiple_collections(bool async)
+        => AssertQuery(
+            async,
+            ss => ss.Set<PrimitiveCollectionsEntity>().OrderBy(x => x.Id).Select(x => new
+            {
+                Ints = x.Ints.ToList(),
+                OrderedInts = x.Ints.OrderByDescending(xx => xx).ToList(),
+                FilteredDateTimes = x.DateTimes.Where(xx => xx.Day != 1).ToList(),
+                FilteredDateTimes2 = x.DateTimes.Where(xx => xx > new DateTime(2000, 1, 1)).ToList()
+            }),
+            elementAsserter: (e, a) =>
+            {
+                AssertCollection(e.Ints, a.Ints, ordered: true);
+                AssertCollection(e.OrderedInts, a.OrderedInts, ordered: true);
+                AssertCollection(e.FilteredDateTimes, a.FilteredDateTimes, elementSorter: ee => ee);
+                AssertCollection(e.FilteredDateTimes2, a.FilteredDateTimes2, elementSorter: ee => ee);
+            },
+            assertOrder: true);
 
     public abstract class PrimitiveCollectionsQueryFixtureBase : SharedStoreFixtureBase<PrimitiveCollectionsContext>, IQueryFixtureBase
     {
@@ -801,6 +935,59 @@ public abstract class PrimitiveCollectionsQueryTestBase<TFixture> : QueryTestBas
                 new()
                 {
                     Id = 3,
+
+                    Int = 20,
+                    String = "20",
+                    DateTime = new DateTime(2022, 1, 10, 12, 30, 0, DateTimeKind.Utc),
+                    Bool = true,
+                    Enum = MyEnum.Value1,
+                    NullableInt = 20,
+
+                    Ints = new[] { 1, 1, 10, 10, 10, 1, 10 },
+                    Strings = new[] { "1", "10", "10", "1", "1" },
+                    DateTimes = new DateTime[]
+                    {
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 10, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 10, 12, 30, 0, DateTimeKind.Utc),
+                    },
+                    Bools = new[] { true, false },
+                    Enums = new[] { MyEnum.Value1, MyEnum.Value2 },
+                    NullableInts = new int?[] { 1, 1, 10, 10, null, 1 },
+                },
+                new()
+                {
+                    Id = 4,
+
+                    Int = 41,
+                    String = "41",
+                    DateTime = new DateTime(2024, 1, 11, 12, 30, 0, DateTimeKind.Utc),
+                    Bool = false,
+                    Enum = MyEnum.Value2,
+                    NullableInt = null,
+
+                    Ints = new[] { 1, 1, 111, 11, 1, 111 },
+                    Strings = new[] { "1", "11", "111", "11" },
+                    DateTimes = new DateTime[]
+                    {
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 11, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 11, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 31, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 1, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 31, 12, 30, 0, DateTimeKind.Utc),
+                        new(2020, 1, 31, 12, 30, 0, DateTimeKind.Utc),
+                    },
+                    Bools = new[] { false },
+                    Enums = new[] { MyEnum.Value2, MyEnum.Value3 },
+                    NullableInts = new int?[] { null, null },
+                },
+                new()
+                {
+                    Id = 5,
 
                     Int = 0,
                     String = "",
